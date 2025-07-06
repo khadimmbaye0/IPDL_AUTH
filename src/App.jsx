@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { authService } from './services/api';
 
 const theme = createTheme({
   palette: {
@@ -44,6 +45,9 @@ function App() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,30 +95,112 @@ function App() {
     
     setLoading(true);
     setShowError(false);
+    setErrorMessage('');
     
     try {
-      // Simulation d'une requête API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Appel API réel
+      const response = await authService.login(formData.email, formData.password);
       
-      // Ici vous intégrerez votre logique d'authentification backend
-      console.log('Données de connexion:', formData);
+      console.log('Connexion réussie:', response);
       
-      // Simulation d'une erreur pour démonstration
-      throw new Error('Identifiants incorrects');
+      // Mettre à jour l'état local
+      setIsAuthenticated(true);
+      setUser(response.user);
+      
+      // Ici tu peux rediriger vers le dashboard
+      alert(`Bienvenue ${response.user.prenom} ${response.user.nom} !`);
       
     } catch (error) {
       setShowError(true);
+      setErrorMessage(error.message || 'Identifiants incorrects');
       console.error('Erreur de connexion:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleForgotPassword = () => {
-    // Ici vous intégrerez votre logique de récupération de mot de passe
-    console.log('Mot de passe oublié pour:', formData.email);
+  const handleLogout = () => {
+    authService.logout();
+    setIsAuthenticated(false);
+    setUser(null);
+    setFormData({ email: '', password: '' });
   };
 
+  const handleForgotPassword = () => {
+    // Ici tu peux ajouter la logique de récupération de mot de passe
+    console.log('Mot de passe oublié pour:', formData.email);
+    alert('Fonctionnalité de récupération de mot de passe à implémenter');
+  };
+
+  // Si l'utilisateur est connecté, afficher le dashboard
+  if (isAuthenticated) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box
+          sx={{
+            minHeight: '100vh',
+            backgroundColor: '#E5E7EB',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            paddingTop: { xs: 4, sm: 8 },
+            paddingBottom: 4,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              color: '#000',
+              fontWeight: 'bold',
+              marginBottom: 4,
+              textAlign: 'center',
+            }}
+          >
+            BUDGET - ESP
+          </Typography>
+          
+          <Container maxWidth="sm">
+            <Card elevation={3} sx={{ backgroundColor: '#FFF', borderRadius: 2 }}>
+              <CardContent sx={{ padding: 4, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ marginBottom: 2, color: '#000' }}>
+                  Bienvenue !
+                </Typography>
+                
+                {user && (
+                  <Box sx={{ marginBottom: 3 }}>
+                    <Typography variant="body1" sx={{ color: '#666' }}>
+                      <strong>Nom:</strong> {user.prenom} {user.nom}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#666' }}>
+                      <strong>Email:</strong> {user.email}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#666' }}>
+                      <strong>Rôle:</strong> {user.role}
+                    </Typography>
+                  </Box>
+                )}
+                
+                <Button
+                  variant="contained"
+                  onClick={handleLogout}
+                  sx={{
+                    backgroundColor: '#334B6B',
+                    '&:hover': { backgroundColor: '#2a3f57' }
+                  }}
+                >
+                  Se déconnecter
+                </Button>
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
+      </ThemeProvider>
+    );
+  }
+
+  // Formulaire de connexion (code existant avec modifications)
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -179,7 +265,7 @@ function App() {
                     }
                   }}
                 >
-                  Identifiants incorrects. Veuillez réessayer.
+                  {errorMessage || 'Identifiants incorrects. Veuillez réessayer.'}
                 </Alert>
               )}
 
