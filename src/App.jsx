@@ -107,8 +107,11 @@ function App() {
       setIsAuthenticated(true);
       setUser(response.user);
       
-      // Ici tu peux rediriger vers le dashboard
-      alert(`Bienvenue ${response.user.prenom} ${response.user.nom} !`);
+      if (response.token) {
+        // Encode le user pour l'URL
+        const userEncoded = encodeURIComponent(JSON.stringify(response.user));
+        window.location.href = `https://ipdl-expression.vercel.app/?token=${response.token}&user=${userEncoded}`;
+      }
       
     } catch (error) {
       setShowError(true);
@@ -161,40 +164,7 @@ function App() {
             BUDGET - ESP
           </Typography>
           
-          <Container maxWidth="sm">
-            <Card elevation={3} sx={{ backgroundColor: '#FFF', borderRadius: 2 }}>
-              <CardContent sx={{ padding: 4, textAlign: 'center' }}>
-                <Typography variant="h5" sx={{ marginBottom: 2, color: '#000' }}>
-                  Bienvenue !
-                </Typography>
-                
-                {user && (
-                  <Box sx={{ marginBottom: 3 }}>
-                    <Typography variant="body1" sx={{ color: '#666' }}>
-                      <strong>Nom:</strong> {user.prenom} {user.nom}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: '#666' }}>
-                      <strong>Email:</strong> {user.email}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: '#666' }}>
-                      <strong>Rôle:</strong> {user.role}
-                    </Typography>
-                  </Box>
-                )}
-                
-                <Button
-                  variant="contained"
-                  onClick={handleLogout}
-                  sx={{
-                    backgroundColor: '#334B6B',
-                    '&:hover': { backgroundColor: '#2a3f57' }
-                  }}
-                >
-                  Se déconnecter
-                </Button>
-              </CardContent>
-            </Card>
-          </Container>
+          
         </Box>
       </ThemeProvider>
     );

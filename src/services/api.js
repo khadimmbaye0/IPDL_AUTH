@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Configuration de base d'axios
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://ipdl-backend-61889efa69fe.herokuapp.com/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
