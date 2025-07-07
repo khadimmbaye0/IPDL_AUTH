@@ -12,7 +12,4 @@ Currently, two official plugins are available:
 - Telecharger ce code 
 - Dans le dossier courant entrer la commande npm intall 
 - Pour demarrer l'application faites npm run dev un lien vous sera donne
-- Diriger vous vers l'URL https://github.com/khadimmbaye0/IPDL_BACKEND
-- Telecharger le code puis dans votre terminal faites la commande npm install pour installer les dependences necessaire
-- Lancer la commande npx nodemon server.js pour demarrer le serveur express.
 - Diriger vous vers le navigateur et mettez le lien que vous avait donne la commande npm run dev
